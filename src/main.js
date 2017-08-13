@@ -8,7 +8,7 @@ import router from './router'
 import store from './store'
 // 引入懒加载插件
 import VueLazyload from 'vue-lazyload'
-
+import $ from 'jquery' // 引入jquery插件
 
 import 'common/stylus/index.styl'
 // 使用 fastclick插件

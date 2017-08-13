@@ -72,8 +72,8 @@
       },
       _getDiscList(){
         getDiscList().then((res) => {
+          console.log(res);
           if (res.code === resCode) {
-            console.log('xiaomeinv');
             console.log(res);
             this.discList = res.data.list;
           }

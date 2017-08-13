@@ -33,19 +33,20 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-
+              <progress-bar :percent='percent' @percentChange='percentChange'></progress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
-            <div class="icon i-left">
-              <i class="icon-sequence"></i>
+            <div class="icon i-left" @click='changeMode'>
+              <i :class='iconMode'></i>
             </div>
+            <span class='descPlayMode' v-show='modeDesDisapper'>{{modeDes}}</span>
             <div class="icon i-left" :class='disableCls'>
               <i class="icon-prev" @click='prev'></i>
             </div>
             <div class="icon i-center" :class='disableCls'>
-              <i  @click.stop='togglePlaying' :class='playIcon'></i>
+              <i @click.stop='togglePlaying' :class='playIcon'></i>
             </div>
             <div class="icon i-right" :class='disableCls'>
               <i class="icon-next" @click='next'></i>
@@ -67,14 +68,16 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-            <i @click.stop="togglePlaying"  :class="miniIcon"></i>
+          <progress-circle :diameter='diameter' :percent='percent'>
+            <i @click.stop="togglePlaying" class='icon-mini' :class="miniIcon"></i>
+          </progress-circle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
-    <audio :src="currentSong.url" ref='audio' @canplay = 'ready' @error='error' @timeupdate='timeupdate'></audio>
+    <audio :src="currentSong.url" ref='audio' @canplay='ready' @error='error' @timeupdate='timeupdate'></audio>
   </div>
 </template>
 
@@ -82,18 +85,36 @@
   import {mapGetters, mapMutations} from 'vuex'
   import {prefixStyle}  from 'common/js/dom'
   import animations from 'create-keyframe-animation'
+  // 引入 进度条基础组件
+  import ProgressBar from '../../base/progress-bar'
+  // 引入圆形 circle组件
+  import ProgressCircle from '../../base/progress-circle.vue'
+  // 引入 播放模式的 文件
+  import {playMode} from '../../common/js/config'
+  // 引入混乱数组的算法
+  import {shuffle} from '../../common/js/util'
+
   const transform = prefixStyle('transform')
-  const transitionDuration = prefixStyle('transitionDuration')
+  const transitionDuration = prefixStyle('transitionDuration'
+  )
   export default{
     props: {},
-    components: {},
+    components: {
+      ProgressBar,
+      ProgressCircle
+    },
     data(){
       return {
-        songReady:false,
-        currentTime:''
+        songReady: false,
+        currentTime: '',
+        diameter: 32,
+        modeDesDisapper: false
       }
     },
     created(){
+
+    },
+    mounted(){
 
     },
     computed: {
@@ -102,10 +123,12 @@
         'playlist',
         'currentSong',
         'playing',
-        'currentIndex'
+        'currentIndex',
+        'mode',
+        'sequenceList',
       ]),
       playIcon(){
-          return this.playing?'icon-pause':'icon-play'
+        return this.playing ? 'icon-pause' : 'icon-play'
       },
       miniIcon(){
         return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
@@ -114,14 +137,25 @@
         return this.playing ? 'play' : 'play pause'
       },
       disableCls(){
-          return this.songReady?'':'disabled'
+        return this.songReady ? '' : 'disabled'
+      },
+      percent(){
+        return this.currentTime / this.currentSong.duration;
+      },
+      iconMode() {
+        return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
+      },
+      modeDes(){
+        return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.loop ? '循环播放' : '随机播放'
       }
     },
     methods: {
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
         setPlayingState: 'SET_PLAYING_STATE',
-        setCurrentIndex:'SET_CURRENT_INDEX',
+        setCurrentIndex: 'SET_CURRENT_INDEX',
+        setPlayMode: 'SET_PLAY_MODE',
+        setPlaylist: 'SET_PLAYLIST',
       }),
       back(){
         this.setFullScreen(false);
@@ -190,29 +224,29 @@
         this.setPlayingState(!this.playing);
       },
       prev(){
-          //  实现上一曲下一曲的原理 是 通过改变索引值 利用songList的索引 改变当前的currentSong  这个以改变 我们的watch就会被触发  就会播放音乐
-        if(!this.songReady){
-            return
+        //  实现上一曲下一曲的原理 是 通过改变索引值 利用songList的索引 改变当前的currentSong  这个以改变 我们的watch就会被触发  就会播放音乐
+        if (!this.songReady) {
+          return
         }
         let index = this.currentIndex - 1;
-        if(index === 0){
-            index = this.playlist.length-1;
+        if (index === 0) {
+          index = this.playlist.length - 1;
         }
         this.songReady = true;
-        if(!this.playing){
-            this.togglePlaying()
+        if (!this.playing) {
+          this.togglePlaying()
         }
         this.setCurrentIndex(index)
 
       },
       next(){
-        let index = this.currentIndex+1;
-        if(index === this.playlist.length){
-            index = 0
+        let index = this.currentIndex + 1;
+        if (index === this.playlist.length) {
+          index = 0
         }
         this.songReady = true;
-        if(!this.playing){
-            this.togglePlaying()
+        if (!this.playing) {
+          this.togglePlaying()
         }
         this.setCurrentIndex(index);
       },
@@ -221,18 +255,79 @@
       },
       error(){
         this.songReady = true;
+      },
+      timeupdate(e){
+        //  e就是 播放器的触发元素
+        /*该事件在音频/视频的播放位置发生改变时触发  通常与currentTime属性一起使用 返回音频/视频的播放位置（以秒计）*/
+        this.currentTime = e.target.currentTime;
+      },
+      format(interval){
+        // 该函数的作用是 将时间戳格式转化为我们的秒数格式
+        // 首先将传入的数  进行向下取整  然后 获取分钟和秒数
+        interval = interval | 0;
+        var minute = interval / 60 | 0;
+        var second = this.pad(interval % 60);
+        return `${minute}:${second}`
+      },
+      pad(time, n = 2){
+        //  time的length 是否满足 我们定制的位数
+        var len = time.toString().length;
+        while (len < n) {
+          time = '0' + time;
+          len++;
+        }
+        return time
+      },
+      percentChange(percent){
+        //  在这里需要将 audio标签的currentTime 更改了
+        this.$refs.audio.currentTime = this.currentSong.duration * percent;
+        if (!this.playing) {
+          console.log('ma');
+          this.togglePlaying();
+        }
+      },
+      changeMode(){
+        // 获取了mode  并更改了mode
+        this.modeDesDisapper = true;
+        clearTimeout(timer);
+        var timer = setTimeout(() => {
+          this.modeDesDisapper = false;
+        }, 500)
+        const mode = (this.mode + 1) % 3;
+        this.setPlayMode(mode)
+        // 根据mode  去改变歌曲列表的 数组
+        let finalList = null
+        if (mode === playMode.random) {
+          finalList = shuffle(this.sequenceList);
+        } else {
+          finalList = this.sequenceList
+        }
+
+        // 当你改变播放模式的时候 当前播放的歌曲 不应该也被改变 所以我们在这里  需要借助一个方法  去保持当前的歌曲不被改变
+        this.resetCurrentIndex(finalList);
+        this.setPlaylist(finalList);
+      },
+      resetCurrentIndex(list){
+        var currentIndex = list.findIndex((item) => {
+          return item.id === this.currentSong.id
+        })
+        this.setCurrentIndex(currentIndex)
       }
     },
     watch: {
-      currentSong(){
+      currentSong(newSong, oldSong){
+        if (newSong.id === oldSong.id) {
+          return
+        }
+        console.log(this.currentSong);
         this.$nextTick(() => {
           this.$refs.audio.play();
         })
       },
       playing(){
-        const  audio = this.$refs.audio;
-        this.$nextTick(()=>{
-            this.playing?audio.play():audio.pause();
+        const audio = this.$refs.audio;
+        this.$nextTick(() => {
+          this.playing ? audio.play() : audio.pause();
         })
       },
     }
@@ -393,6 +488,11 @@
         .operators
           display: flex
           align-items: center
+          .descPlayMode
+            position: absolute;
+            top: 36px;
+            left: 29px;
+            font-size: 14px;
           .icon
             flex: 1
             color: $color-theme
