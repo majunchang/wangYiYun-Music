@@ -8,13 +8,14 @@ function getRandomInt(min, max) {
 
 
 export function shuffle(arr) {
-  for (var i = 0; i < arr.length; i++) {
+  var arr1 = arr.slice();
+  for (var i = 0; i < arr1.length; i++) {
     var j = getRandomInt(0,i);
-    var t = arr[i];
-    arr[i] = arr[j];
-    arr[j] = t;
+    var t = arr1[i];
+    arr1[i] = arr1[j];
+    arr1[j] = t;
   }
-  return arr
+  return arr1
 }
 
 

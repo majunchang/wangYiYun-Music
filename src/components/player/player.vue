@@ -77,7 +77,7 @@
         </div>
       </div>
     </transition>
-    <audio :src="currentSong.url" ref='audio' @canplay='ready' @error='error' @timeupdate='timeupdate'></audio>
+    <audio :src="currentSong.url" ref='audio' @canplay='ready' @error='error' @timeupdate='timeupdate' @ended='end'></audio>
   </div>
 </template>
 
@@ -146,7 +146,7 @@
         return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
       },
       modeDes(){
-        return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.loop ? '循环播放' : '随机播放'
+        return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.loop ? '单曲循环' : '随机播放'
       }
     },
     methods: {
@@ -260,6 +260,18 @@
         //  e就是 播放器的触发元素
         /*该事件在音频/视频的播放位置发生改变时触发  通常与currentTime属性一起使用 返回音频/视频的播放位置（以秒计）*/
         this.currentTime = e.target.currentTime;
+      },
+      end(){
+        // 当一首播放结束的时候 要判断市以什么方式播放的 如果市单曲循环的话 那么我们就不能直接能直接 播放下一个
+        if(this.mode === playMode.loop){
+          this.loop()
+        }else {
+          this.next()
+        }
+      },
+      loop(){
+        this.$refs.audio.currentTime = 0;
+        this.$refs.audio.play();
       },
       format(interval){
         // 该函数的作用是 将时间戳格式转化为我们的秒数格式
