@@ -62,7 +62,13 @@
         this.$emit('percentChange', percent)
       },
       progressBarClick(e){
-        var moveWidth = e.offsetX;
+
+        /*
+         var moveWidth = e.offsetX;  这样获取的 moveWidth 在我们点击按钮的时候 会出现bug
+         所以在这里 我们对他进行改造
+         */
+        var rect = this.$refs.progressBar.getBoundingClientRect();
+        var moveWidth = e.pageX - rect;
         this.offset(moveWidth);
         this.triggerPercent();
       }
