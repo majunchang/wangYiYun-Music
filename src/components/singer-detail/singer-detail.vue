@@ -53,7 +53,6 @@
           if (res.code === resCode) {
             // console.log(res.data.list)  ;
             this.songs = this.normalizeSongs(res.data.list);
-
           }
         })
       },

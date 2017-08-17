@@ -294,7 +294,6 @@
         //  在这里需要将 audio标签的currentTime 更改了
         this.$refs.audio.currentTime = this.currentSong.duration * percent;
         if (!this.playing) {
-          console.log('ma');
           this.togglePlaying();
         }
       },
@@ -331,9 +330,10 @@
         if (newSong.id === oldSong.id) {
           return
         }
-        console.log(this.currentSong);
+        //console.log(this.currentSong);
         this.$nextTick(() => {
           this.$refs.audio.play();
+          this.currentSong.getLyrics();
         })
       },
       playing(){
