@@ -3,7 +3,8 @@
  */
 import * as types from './mutation-type'
 import {playMode} from 'common/js/config'
-import {shuffle} from "../../../wangYiYun-Music/src/common/js/util"
+
+import {shuffle} from "../../src/common/js/util"
 
 export  const selectPlay = function ({commit,state},{list,index}) {
   // 在这个里面对多个commit进行封装 进行异步的调用
