@@ -28,6 +28,14 @@
               <div class="playing-lyric"></div>
             </div>
           </div>
+          <scroll class="middle-r" ref='lyricList' :data='currentLyric&&currentLyric.lines'>
+            <div class="lyric-wrapper">
+              <div v-if='currentLyric'>
+                <p ref='lyricLine' class='text' :class="{'current':currentLineNum === index}"
+                   v-for='(line,index) in currentLyric.lines'>{{line.txt}}</p>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom">
           <div class="progress-wrapper">
@@ -77,7 +85,8 @@
         </div>
       </div>
     </transition>
-    <audio :src="currentSong.url" ref='audio' @canplay='ready' @error='error' @timeupdate='timeupdate' @ended='end'></audio>
+    <audio :src="currentSong.url" ref='audio' @canplay='ready' @error='error' @timeupdate='timeupdate'
+           @ended='end'></audio>
   </div>
 </template>
 
@@ -93,6 +102,10 @@
   import {playMode} from '../../common/js/config'
   // 引入混乱数组的算法
   import {shuffle} from '../../common/js/util'
+  // 引入解析歌词的插件
+  import lyricParser from 'lyric-parser'
+  // 引入滚动组件
+  import scroll from '../../base/scroll.vue'
 
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration'
@@ -101,14 +114,17 @@
     props: {},
     components: {
       ProgressBar,
-      ProgressCircle
+      ProgressCircle,
+      scroll
     },
     data(){
       return {
         songReady: false,
         currentTime: '',
         diameter: 32,
-        modeDesDisapper: false
+        modeDesDisapper: false,
+        currentLyric: null,
+        currentLineNum: 0
       }
     },
     created(){
@@ -263,9 +279,9 @@
       },
       end(){
         // 当一首播放结束的时候 要判断市以什么方式播放的 如果市单曲循环的话 那么我们就不能直接能直接 播放下一个
-        if(this.mode === playMode.loop){
+        if (this.mode === playMode.loop) {
           this.loop()
-        }else {
+        } else {
           this.next()
         }
       },
@@ -323,6 +339,28 @@
           return item.id === this.currentSong.id
         })
         this.setCurrentIndex(currentIndex)
+      },
+      getLyric(){
+        // lyricParser
+        this.currentSong.getLyrics().then((lyric) => {
+          // 将歌词进行解析
+          this.currentLyric = new lyricParser(lyric, this.handleLyric);
+          if (this.playing) {
+            // 这是lyric-parser自带的插件
+            this.currentLyric.play();
+          }
+          console.log(this.currentLyric);
+        })
+      },
+      handleLyric({lineNum, txt}){
+        console.log(arguments);
+        this.currentLineNum = lineNum;
+        if (this.currentLineNum > 5) {
+          let lineEle = this.$refs.lyricLine[lineNum - 5];
+          this.$refs.lyricList.scrollToElement(lineEle, 1000)
+        } else {
+          this.$refs.lyricList.scrollTo(0, 0, 1000)
+        }
       }
     },
     watch: {
@@ -333,7 +371,8 @@
         //console.log(this.currentSong);
         this.$nextTick(() => {
           this.$refs.audio.play();
-          this.currentSong.getLyrics();
+          // 在这里将获取歌词并格式化的代码 封装为一个方法
+          this.getLyric()
         })
       },
       playing(){

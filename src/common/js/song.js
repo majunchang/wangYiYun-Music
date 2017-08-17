@@ -19,12 +19,20 @@ export default class Song{
   }
 
   getLyrics(){
-    getLyric(this.mid).then((res)=>{
-      if(res.retcode===0){
-        this.lyric = Base64.decode(res.lyric)
-        console.log(res);
-        console.log(this.lyric);
-      }
+    /* 在这里 会产生 这样的一个问题 就是每当我的currentSong发生变化的时候  就会调用这个方法 那么如果说a歌曲已经调用过该方法 并且拿到了自己的歌词数据 再次调用就会很赘余  所以我们对这个方法 进行封装和改造 */
+    if(this.lyric){
+      return Promise.resolve(this.lyric)
+    }
+    return new Promise((resolve,reject)=>{
+        getLyric(this.mid).then((res)=>{
+          if(res.retcode===0){
+            this.lyric = Base64.decode(res.lyric);
+            console.log(this.lyric);
+            resolve(this.lyric)
+          }else {
+            reject('no lyrics')
+          }
+        })
     })
   }
 }
