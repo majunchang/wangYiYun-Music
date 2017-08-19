@@ -247,33 +247,53 @@
       },
       togglePlaying() {
         this.setPlayingState(!this.playing);
+        // 暂停的时候 歌词就不要继续进行了
+        if (this.currentLyric) {
+          this.currentLyric.togglePlay();
+        }
       },
       prev() {
         //  实现上一曲下一曲的原理 是 通过改变索引值 利用songList的索引 改变当前的currentSong  这个以改变 我们的watch就会被触发  就会播放音乐
         if (!this.songReady) {
           return
         }
-        let index = this.currentIndex - 1;
-        if (index === 0) {
-          index = this.playlist.length - 1;
+        console.log(this.playlist.length);
+        if (this.playlist.length === 1) {
+          this.loop();
+          return
+        } else {
+          let index = this.currentIndex - 1;
+          if (index === -1) {
+            index = this.playlist.length - 1;
+          }
+          this.songReady = true;
+          if (!this.playing) {
+            this.togglePlaying()
+          }
+          this.setCurrentIndex(index)
         }
-        this.songReady = true;
-        if (!this.playing) {
-          this.togglePlaying()
-        }
-        this.setCurrentIndex(index)
+
 
       },
       next() {
-        let index = this.currentIndex + 1;
-        if (index === this.playlist.length) {
-          index = 0
+        if (!this.songReady) {
+          return
         }
-        this.songReady = true;
-        if (!this.playing) {
-          this.togglePlaying()
+        if(this.playlist.length ===1){
+            this.loop();
+            return
+        }else {
+          let index = this.currentIndex + 1;
+          if (index === this.playlist.length) {
+            index = 0
+          }
+          this.songReady = true;
+          if (!this.playing) {
+            this.togglePlaying()
+          }
+          this.setCurrentIndex(index);
         }
-        this.setCurrentIndex(index);
+
       },
       ready() {
         this.songReady = true;
@@ -297,6 +317,10 @@
       loop() {
         this.$refs.audio.currentTime = 0;
         this.$refs.audio.play();
+        // 单曲循环的时候  让歌词回到原点
+        if (this.currentLyric) {
+          this.currentLyric.seek(0)
+        }
       },
       format(interval) {
         // 该函数的作用是 将时间戳格式转化为我们的秒数格式
@@ -318,8 +342,14 @@
       percentChange(percent) {
         //  在这里需要将 audio标签的currentTime 更改了
         this.$refs.audio.currentTime = this.currentSong.duration * percent;
+        var currentPercentTime = this.currentSong.duration * percent;
         if (!this.playing) {
           this.togglePlaying();
+        }
+        console.log(this.currentSong.duration);
+        console.log(currentPercentTime);
+        if (this.currentLyric) {
+          this.currentLyric.seek(currentPercentTime * 1000);
         }
       },
       changeMode() {
@@ -358,11 +388,9 @@
             // 这是lyric-parser自带的插件
             this.currentLyric.play();
           }
-          console.log(this.currentLyric);
         })
       },
       handleLyric({lineNum, txt}) {
-        console.log(arguments);
         this.currentLineNum = lineNum;
         if (this.currentLineNum > 5) {
           let lineEle = this.$refs.lyricLine[lineNum - 5];
@@ -370,6 +398,7 @@
         } else {
           this.$refs.lyricList.scrollTo(0, 0, 1000)
         }
+        this.playingLyric = txt;
       },
       middleTouchStart(e) {
         this.touch.initiated = true;
@@ -421,34 +450,39 @@
             opacity = 0
           }
         }
-          const time = 300
-          this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
-          this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`
-          this.$refs.middleL.style.opacity = opacity
-          this.$refs.middleL.style[transitionDuration] = `${time}ms`
-          this.touch.initiated = false
-        }
-      },
-      watch: {
-        currentSong(newSong, oldSong) {
-          if (newSong.id === oldSong.id) {
-            return
-          }
-          //console.log(this.currentSong);
-          this.$nextTick(() => {
-            this.$refs.audio.play();
-            // 在这里将获取歌词并格式化的代码 封装为一个方法
-            this.getLyric()
-          })
-        },
-        playing() {
-          const audio = this.$refs.audio;
-          this.$nextTick(() => {
-            this.playing ? audio.play() : audio.pause();
-          })
-        },
+        const time = 300
+        this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
+        this.$refs.lyricList.$el.style[transitionDuration] = `${time}ms`
+        this.$refs.middleL.style.opacity = opacity
+        this.$refs.middleL.style[transitionDuration] = `${time}ms`
+        this.touch.initiated = false
       }
+    },
+    watch: {
+      currentSong(newSong, oldSong) {
+        if (newSong.id === oldSong.id) {
+          return
+        }
+        //  切换歌曲的时候 去掉定时器
+        if (this.currentLyric) {
+          this.currentLyric.stop();
+          this.currentTime = 0
+        }
+        //console.log(this.currentSong);
+        this.$nextTick(() => {
+          this.$refs.audio.play();
+          // 在这里将获取歌词并格式化的代码 封装为一个方法
+          this.getLyric()
+        })
+      },
+      playing() {
+        const audio = this.$refs.audio;
+        this.$nextTick(() => {
+          this.playing ? audio.play() : audio.pause();
+        })
+      },
     }
+  }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">

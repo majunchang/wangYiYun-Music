@@ -9,6 +9,9 @@ import search from '../components/search/search.vue'
 
 // 引入歌手详情页
 import singerDetail from '../components/singer-detail/singer-detail.vue'
+// 引入 歌单详情页
+import Disc from '../components/disc/disc.vue'
+
 
 Vue.use(Router)
 
@@ -20,7 +23,13 @@ export default new Router({
     },
     {
       path: '/recommend',
-      component: recommend
+      component: recommend,
+      children:[
+        {
+          path:':id',
+          component:Disc
+        }
+      ]
     },
     {
       // /singer/${item.id}

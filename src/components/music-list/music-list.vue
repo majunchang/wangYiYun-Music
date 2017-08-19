@@ -31,12 +31,15 @@
   import {prefixStyle} from '../../common/js/dom'
   // 在组件中 分发action  使用mapActions辅助函数将组建中的methods映射为store.distapch调用
   import {mapActions} from 'vuex'
+  // 引入Vue的mixin模式
+  import {playlistMixin} from '../../common/js/mixin'
 
   const leftHeigth = 40;
   const transform = prefixStyle('transform')
   const backdrop = prefixStyle('backdrop-filter')
 
   export default{
+    mixins: [playlistMixin],
     props: {
       bgImage: {
         type: String,
@@ -77,6 +80,13 @@
       }
     },
     methods: {
+      handlePlaylist(playlist){
+        // 固定一下底部数组
+        const bottomHeight = playlist.length > 0 ? '60px' : '';
+        this.$refs.songList.$el.style.bottom = bottomHeight;
+        // console.log(this.$refs.songList);
+        this.$refs.songList.refresh();
+      },
       // 声明scroll方法 当子组件触发scroll时 传递给父组件 进行实时的变化
       scroll(pos){
         this.scrollY = pos.y;
@@ -86,17 +96,17 @@
       },
       random(){
         this.randomPlay({
-          list:this.songs
+          list: this.songs
         })
       },
       selectSong(item, index){
         this.selectPlay({
-          list:this.songs,
+          list: this.songs,
           index
         })
       },
       ...mapActions([
-          // 映射  this.selectplay() 为 this.$store.dispatch('increment')
+        // 映射  this.selectplay() 为 this.$store.dispatch('increment')
         'selectPlay',
         'randomPlay'
       ]),

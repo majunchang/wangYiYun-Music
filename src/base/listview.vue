@@ -25,7 +25,7 @@
         </li>
       </ul>
     </div>
-    <div class="list-fixed" ref='fixed' v-show='fixedTitle' >
+    <div class="list-fixed" ref='fixed' v-show='fixedTitle'>
       <div class="fixed-title">{{fixedTitle}}</div>
     </div>
   </scroll>
@@ -36,6 +36,7 @@
   import Scroll from 'base/scroll'
   // 引入dom.js中的getdatda方法
   import {getData}from '../common/js/dom'
+
 
   const keyWordHeight = 18
   const TITLE_HEIGHT = 30;
@@ -53,7 +54,7 @@
       return {
         scrollY: -1,
         currentIndex: 0,
-        diff:-1
+        diff: -1
       }
     },
     created(){
@@ -69,16 +70,19 @@
         })
       },
       fixedTitle(){
-          if(this.scrollY>0){
-              return ''
-          }
-          return this.data[this.currentIndex]?this.data[this.currentIndex].title:''
+        if (this.scrollY > 0) {
+          return ''
+        }
+        return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
       }
     },
     methods: {
+      refresh(){
+        this.$refs.listView.refresh();
+      },
       selectItem(item){
         // 触发 父组件的方法
-        this.$emit('select',item)
+        this.$emit('select', item)
       },
       onShortcutTouchStart(e){
         // 我们的目的是获取到  你触摸的这个的index索引值
@@ -152,7 +156,7 @@
           if (-newY > height1 && -newY <= height2) {
             // 在这里 在距离数组中 是出于i+1的索引 但是在我们的快速入口数组中 是位于i 因为快速入口数组是基于0的
             this.currentIndex = i;
-            this.diff = height2+newY;
+            this.diff = height2 + newY;
             return
           }
         }
@@ -161,9 +165,9 @@
         console.log(this.currentIndex);
       },
       diff(newVal){
-          let fixedTop = (newVal>0&& newVal<TITLE_HEIGHT)?newVal-TITLE_HEIGHT:0
-        if(this.fixedTop === fixedTop){
-              return
+        let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+        if (this.fixedTop === fixedTop) {
+          return
         }
         this.fixedTop = fixedTop
         this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`

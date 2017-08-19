@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" ref="recommend">
     <scroll class="recommend-content" ref='scroll' :data='discList'>
       <div>
         <div class="slider-wrapper" v-if="recommends.length">
@@ -14,7 +14,7 @@
         <div class="recommend-list">
           <h1 class='list-title'>热门歌单推荐</h1>
           <ul>
-            <li v-for="item in discList" class='item'>
+            <li v-for="item in discList" class='item' @click='selectItem(item)'>
               <div class="icon">
                 <img v-lazy="item.imgurl" width='60' height='60' alt="">
               </div>
@@ -30,7 +30,7 @@
         <loading></loading>
       </div>
     </scroll>
-
+    <router-view></router-view>
   </div>
 </template>
 
@@ -42,7 +42,12 @@
   import scroll from '../../base/scroll.vue'
   // 引入loading动画组件
   import loading from '../../base/loading.vue'
+  import {playlistMixin} from 'common/js/mixin'
+
+  import {mapMutations} from 'vuex'
+
   export default{
+    mixins: [playlistMixin],
     components: {
       Slider,
       scroll,
@@ -57,9 +62,9 @@
     },
     created(){
       this._getRecommend();
-      setTimeout(()=>{
+      setTimeout(() => {
         this._getDiscList();
-      },400)
+      }, 400)
     },
     computed: {},
     methods: {
@@ -72,9 +77,9 @@
       },
       _getDiscList(){
         getDiscList().then((res) => {
-          console.log(res);
+         // console.log(res);
           if (res.code === resCode) {
-            console.log(res);
+            // console.log(res);
             this.discList = res.data.list;
           }
         })
@@ -84,6 +89,23 @@
           this.checkloaded = true;
           this.$refs.scroll.refresh()
         }
+      },
+      handlePlaylist(playlist){
+        const bottom = playlist.length > 0 ? '60px' : ''
+
+        this.$refs.recommend.style.bottom = bottom
+        this.$refs.scroll.refresh()
+      },
+      ...mapMutations({
+        setDisc: 'SET_DISC'
+      }),
+      selectItem(item){
+        // 点击item之后 页面进行跳转 并且将你点击的这个 存储进入vuex里面
+        console.log(item);
+        this.$router.push({
+          path:`/recommend/${item.dissid}`
+        })
+        this.setDisc(item);
       }
     }
   }

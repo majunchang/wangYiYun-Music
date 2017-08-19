@@ -13,10 +13,12 @@
   import listView from 'base/listview'
   // 从vuex中 引入这个mutation
   import {mapMutations} from 'vuex'
+  import {playlistMixin} from 'common/js/mixin'
 
   const hotLength = 10;
   const hotName = '热门';
   export default{
+    mixins: [playlistMixin],
     components: {
       listView
     },
@@ -31,6 +33,12 @@
     },
     computed: {},
     methods: {
+      handlePlaylist(playlist){
+        const bottom  = playlist.length>0?'60px':'';
+        this.$refs.singer.style.bottom = bottom;
+        console.log(this.$refs.singer);
+        this.$refs.list.refresh();
+      },
         // mapMutations  在methods中声明
       ...mapMutations({
         setSinger:'SET_SINGER'
@@ -40,7 +48,7 @@
             path:`/singer/${item.id}`
           })
         // 将传入的参数对象 放入vuex中  item 也就是单个的歌手对象
-        console.log(item);
+//        console.log(item);
         this.setSinger(item)
       },
       _getSingerList(){
