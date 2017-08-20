@@ -162,7 +162,7 @@
         }
         // 滚动到底部的时候
         this.currentIndex = listHeight.length - 2;
-        console.log(this.currentIndex);
+       // console.log(this.currentIndex);
       },
       diff(newVal){
         let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
