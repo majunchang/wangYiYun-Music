@@ -30,6 +30,10 @@
         type: Boolean,
         default: false
       },
+      pullUpRefresh: {
+        type: Boolean,
+        default: false
+      }
     },
     components: {},
     data(){
@@ -46,7 +50,7 @@
     computed: {},
     methods: {
       _initScroll(){
-          console.log(this.listenScroll);
+        console.log(this.listenScroll);
         if (!this.$refs.wrapper) {
           return
         }
@@ -54,11 +58,21 @@
           probeType: this.probeType,
           click: this.click
         })
-        if(this.listenScroll){
-            let _this = this;
-            this.scroll.on('scroll',(pos)=>{
-                _this.$emit('scroll',pos);
-            })
+        if (this.listenScroll) {
+          let _this = this;
+          this.scroll.on('scroll', (pos) => {
+            _this.$emit('scroll', pos);
+          })
+        }
+
+        if (this.pullUpRefresh) {
+          this.scroll.on('scrollEnd', () => {
+            console.log(this.scroll.y);
+            console.log(this.scroll.maxScrollY);
+            if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
+              this.$emit('UPEnd')
+            }
+          })
         }
       },
       disabled(){

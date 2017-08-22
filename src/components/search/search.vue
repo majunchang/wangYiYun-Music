@@ -3,19 +3,19 @@
     <div class="search-box-wrapper">
       <search-box ref='searchBox' @inputMsg='onInputMsg'></search-box>
     </div>
-    <div class="shortcut-wrapper" ref='shortcutWrapper'>
+    <div class="shortcut-wrapper" ref='shortcutWrapper' v-show='!searchMsg'>
       <div class="shortcut">
         <div class="hot-key">
           <h1 class='title'>热门搜索</h1>
           <ul>
             <li @click='addMsg(item.k)' class='item' v-for='item in hotKey'>
-              <span>{{item.k}}+1</span>
+              <span>{{item.k}}</span>
             </li>
           </ul>
         </div>
       </div>
     </div>
-    <div class="search-result">
+    <div class="search-result" v-show='searchMsg'>
       <suggest :searchMsg='searchMsg' ref='suggest'></suggest>
     </div>
   </div>
@@ -36,7 +36,7 @@
     data(){
       return {
         hotKey: [],
-        searchMsg:''
+        searchMsg: ''
       }
     },
     created(){
@@ -45,8 +45,7 @@
     computed: {},
     methods: {
       onInputMsg(searchMsg){
-          this.searchMsg = searchMsg
-           console.log('ma');
+        this.searchMsg = searchMsg
       },
       _getHotKey(){
         getHotKey().then((res) => {
@@ -57,7 +56,6 @@
         })
       },
       addMsg(msg){
-        console.log('liuyifei');
         this.$refs.searchBox.setMsg(msg);
       }
     }

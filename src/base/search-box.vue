@@ -31,7 +31,7 @@
         this.inputMsg = ''
       },
       setMsg(msg){
-          console.log('liyitong');
+
           this.inputMsg = msg
       }
     }
