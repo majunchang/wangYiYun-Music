@@ -6,7 +6,7 @@
           @UPEnd='searchMore'
   >
     <ul class="suggest-list">
-      <li class="suggest-item" v-for='item in result'>
+      <li class="suggest-item" @click='selectItem(item)' v-for='item in result'>
         <div class="icon">
           <i :class='getIconCls(item)'></i>
         </div>
@@ -20,17 +20,20 @@
 </template>
 
 <script>
-  import {search}  from '../../api/search'
+  import {search} from '../../api/search'
   import {createSong} from '../../common/js/song'
   //  引入scroll组件  将这个搜索结果变为滑动的
   import Scroll from '../../base/scroll.vue'
   // 引入懒加载组件
-  import loading  from '../../base/loading.vue'
+  import loading from '../../base/loading.vue'
+  // 引入vuex的辅助函数
+  import {mapMutations,mapActions} from 'vuex'
+  import Singer from '../../common/js/singer'
 
   const TYPE_SINGER = 'singer'
   const perpage = 20;
 
-  export default{
+  export default {
     props: {
       searchMsg: {
         type: String,
@@ -45,7 +48,7 @@
       Scroll,
       loading
     },
-    data(){
+    data() {
       return {
         result: [],
         pullUpRefresh: true,
@@ -53,15 +56,15 @@
         hasMore: true
       }
     },
-    created(){
+    created() {
 
     },
     computed: {},
     methods: {
-      search(){
+      search() {
         //this.page = 1;
         this.hasMore = true;
-        this.$refs.suggest.scrollTo(0,0);
+        this.$refs.suggest.scrollTo(0, 0);
         search(this.searchMsg, this.page, this.showSinger, perpage).then((res) => {
           if (res.code === 0) {
             this.result = this.genResult(res.data);
@@ -70,7 +73,7 @@
           }
         })
       },
-      genResult(data){
+      genResult(data) {
         let ret = []
         if (data.zhida && data.zhida.singerid) {
 //          console.log({...data.zhida});
@@ -84,7 +87,7 @@
 //        console.log(ret);
         return ret
       },
-      _normalizeSongs(list){
+      _normalizeSongs(list) {
         let ret = []
         list.forEach((musicData) => {
           if (musicData.songid && musicData.albummid) {
@@ -94,29 +97,29 @@
         //console.log(ret);
         return ret
       },
-      getIconCls(item){
+      getIconCls(item) {
         if (item.type === TYPE_SINGER) {
           return 'icon-mine'
         } else {
           return 'icon-music'
         }
       },
-      getDisPlayName(item){
+      getDisPlayName(item) {
         if (item.type === TYPE_SINGER) {
           return item.singername
         } else {
           return `${item.name}-${item.singer}`
         }
       },
-      checkMore(data){
+      checkMore(data) {
         const song = data.song;
         if (!song.list.length || song.curnum + song.curpage * perpage > song.totalnum) {
           this.hasMore = false;
         }
       },
-      searchMore(){
+      searchMore() {
         if (!this.hasMore) {
-            console.log('lsk');
+          console.log('lsk');
           return
         }
         console.log('ma');
@@ -128,10 +131,35 @@
             this.checkMore(res.data);
           }
         })
-      }
+      },
+      selectItem(item) {
+        /*
+        判断为歌手的 选项 跳转路由 设置mumation 触发事件
+         */
+        if (item.type === TYPE_SINGER) {
+          // 构造一个singer实例
+          const singer = new Singer({
+            id: item.singermid,
+            name: item.singername
+          })
+
+          this.$router.push({
+            path: `/search/${singer.id}`
+          })
+          this.setSinger(singer);
+        } else {
+            this.insertSong(item)
+        }
+      },
+      ...mapMutations({
+        setSinger: 'SET_SINGER'
+      }),
+      ...mapActions([
+        'insertSong'
+      ])
     },
     watch: {
-      searchMsg(newVal){
+      searchMsg(newVal) {
         this.search(newVal)
       }
     }
