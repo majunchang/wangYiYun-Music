@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="search-result" v-show='searchMsg'>
-      <suggest :searchMsg='searchMsg' ref='suggest'></suggest>
+      <suggest @listScroll="blurInput" :searchMsg='searchMsg' ref='suggest'></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -58,6 +58,9 @@
       },
       addMsg(msg){
         this.$refs.searchBox.setMsg(msg);
+      },
+      blurInput(){
+        this.$refs.searchBox.blur()
       }
     }
   }

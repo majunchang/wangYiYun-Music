@@ -4,6 +4,8 @@
           :data='result'
           :pullUpRefresh='pullUpRefresh'
           @UPEnd='searchMore'
+          :beforeScroll="beforeScroll"
+          @beforeScroll="listScroll"
   >
     <ul class="suggest-list">
       <li class="suggest-item" @click='selectItem(item)' v-for='item in result'>
@@ -16,6 +18,9 @@
       </li>
       <loading v-show='hasMore' title=''></loading>
     </ul>
+    <div class="no-result-wrapper" v-show="!hasMore&&!result.length">
+      <no-result title="抱歉，暂无搜索结果"></no-result>
+    </div>
   </scroll>
 </template>
 
@@ -27,8 +32,10 @@
   // 引入懒加载组件
   import loading from '../../base/loading.vue'
   // 引入vuex的辅助函数
-  import {mapMutations,mapActions} from 'vuex'
+  import {mapMutations, mapActions} from 'vuex'
   import Singer from '../../common/js/singer'
+  // 当我们搜索不到结果的时候 需要给用户一个提示
+  import NoResult from '../../base/ no-result/no-result.vue'
 
   const TYPE_SINGER = 'singer'
   const perpage = 20;
@@ -46,14 +53,16 @@
     },
     components: {
       Scroll,
-      loading
+      loading,
+      NoResult
     },
     data() {
       return {
         result: [],
         pullUpRefresh: true,
         page: 1,
-        hasMore: true
+        hasMore: true,
+        beforeScroll: true,
       }
     },
     created() {
@@ -148,7 +157,7 @@
           })
           this.setSinger(singer);
         } else {
-            this.insertSong(item)
+          this.insertSong(item)
         }
       },
       ...mapMutations({
@@ -156,7 +165,10 @@
       }),
       ...mapActions([
         'insertSong'
-      ])
+      ]),
+      listScroll() {
+        this.$emit('listScroll')
+      },
     },
     watch: {
       searchMsg(newVal) {

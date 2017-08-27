@@ -19,6 +19,23 @@ export function shuffle(arr) {
 }
 
 
+//  在这里声明一个函数  用来延时执行 某个函数
+
+export  function debounce(func,delay) {
+let timer;
+  return function(...args){
+    //  这是es6的rest参数
+    if(timer){
+      clearTimeout(timer);
+    }
+    //console.log(args);
+    timer = setTimeout(()=>{
+      func.apply(this,args)
+    },delay);
+  }
+}
+
+
 
 
 

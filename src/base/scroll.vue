@@ -33,6 +33,10 @@
       pullUpRefresh: {
         type: Boolean,
         default: false
+      },
+      beforeScroll:{
+        type: Boolean,
+        default: false
       }
     },
     components: {},
@@ -72,6 +76,11 @@
             if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
               this.$emit('UPEnd')
             }
+          })
+        }
+        if(this.beforeScroll){
+          this.scroll.on('beforeScrollStart',()=>{
+            this.$emit('beforeScroll')
           })
         }
       },

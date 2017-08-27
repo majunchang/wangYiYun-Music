@@ -7,6 +7,8 @@
 </template>
 
 <script>
+  import {debounce}  from 'common/js/util'
+
   export default{
     props: {
       placeholder: {
@@ -21,9 +23,10 @@
       }
     },
     created(){
-        this.$watch('inputMsg',(newVal)=>{
+        this.$watch('inputMsg',debounce((newVal)=>{
+            // console.log(newVal);
             this.$emit('inputMsg',newVal)
-        })
+        },200));
     },
     computed: {},
     methods: {
@@ -31,8 +34,10 @@
         this.inputMsg = ''
       },
       setMsg(msg){
-
           this.inputMsg = msg
+      },
+      blur(){
+        this.$refs.input.blur();
       }
     }
   }
