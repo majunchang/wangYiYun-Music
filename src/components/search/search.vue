@@ -4,7 +4,7 @@
       <search-box ref='searchBox' @inputMsg='onInputMsg'></search-box>
     </div>
     <div class="shortcut-wrapper" ref='shortcutWrapper' v-show='!searchMsg'>
-      <div class="shortcut">
+      <div class="shortcut" ref='shortcut'>
         <div class="hot-key">
           <h1 class='title'>热门搜索</h1>
           <ul>
@@ -13,10 +13,19 @@
             </li>
           </ul>
         </div>
-      </div>
+        <div class="search-history" v-show='searchHistory.length'>
+          <h1 class="title">
+            <span class='text'>搜索历史</span>
+            <span class="clear">
+            <i class='icon-clear'></i>
+          </span>
+          </h1>
+          <search-list :searches='searchHistory'></search-list>
+        </div>
     </div>
-    <div class="search-result" v-show='searchMsg'>
-      <suggest @listScroll="blurInput" :searchMsg='searchMsg' ref='suggest'></suggest>
+    </div>
+    <div class="search-result" v-show='searchMsg' ref='searchResult'>
+      <suggest @listScroll="blurInput" :searchMsg='searchMsg' ref='suggest' @selected='saveSearch'></suggest>
     </div>
     <router-view></router-view>
   </div>
@@ -27,11 +36,17 @@
   import {getHotKey} from '../../api/search'
   // 引入搜索结果页面
   import suggest from '../../components/suggest/suggest.vue'
+  import {mapActions, mapGetters} from 'vuex'
+  // 引入歌曲搜索列表
+  import searchList from '../../base/search-list.vue'
+  import {playlistMixin} from 'common/js/mixin'
 
   export default{
+    mixins: [playlistMixin],
     components: {
       SearchBox,
-      suggest
+      suggest,
+      searchList
     },
     props: {},
     data(){
@@ -43,7 +58,11 @@
     created(){
       this._getHotKey()
     },
-    computed: {},
+    computed: {
+      ...mapGetters([
+        'searchHistory'
+      ])
+    },
     methods: {
       onInputMsg(searchMsg){
         this.searchMsg = searchMsg
@@ -61,6 +80,20 @@
       },
       blurInput(){
         this.$refs.searchBox.blur()
+      },
+      saveSearch(){
+        this.saveSearchHistory(this.searchMsg)
+      },
+      ...mapActions([
+        'saveSearchHistory',
+      ]),
+      handlePlaylist(playlist){
+        var bottom = playlist.length > 0 ? '60px' : 0;
+        this.$refs.searchResult.style.bottom = bottom
+        this.$refs.suggest.refresh()
+
+        this.$refs.shortcutWrapper.style.bottom = bottom
+        //this.$refs.shortcut.refresh()
       }
     }
   }

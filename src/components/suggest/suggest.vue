@@ -1,6 +1,6 @@
 <template>
   <scroll class="suggest"
-          ref='suggest'
+          ref='scroll'
           :data='result'
           :pullUpRefresh='pullUpRefresh'
           @UPEnd='searchMore'
@@ -73,7 +73,7 @@
       search() {
         //this.page = 1;
         this.hasMore = true;
-        this.$refs.suggest.scrollTo(0, 0);
+        this.$refs.scroll.scrollTo(0, 0);
         search(this.searchMsg, this.page, this.showSinger, perpage).then((res) => {
           if (res.code === 0) {
             this.result = this.genResult(res.data);
@@ -128,10 +128,8 @@
       },
       searchMore() {
         if (!this.hasMore) {
-          console.log('lsk');
           return
         }
-        console.log('ma');
         this.page++;
         search(this.searchMsg, this.page, this.showSinger, perpage).then((res) => {
           if (res.code === 0) {
@@ -159,6 +157,7 @@
         } else {
           this.insertSong(item)
         }
+        this.$emit('selected',item)
       },
       ...mapMutations({
         setSinger: 'SET_SINGER'
@@ -169,6 +168,9 @@
       listScroll() {
         this.$emit('listScroll')
       },
+      refresh(){
+          this.$refs.scroll.refresh();
+      }
     },
     watch: {
       searchMsg(newVal) {

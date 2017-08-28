@@ -4,6 +4,7 @@
 
 // 引入设计模式
   import {playMode} from 'common/js/config'
+  import {loadSearch} from 'common/js/cache'
 
 const state = {
   singer:{},
@@ -14,7 +15,8 @@ const state = {
   mode:playMode.sequence,
   currentIndex:-1,
   disc:{},
-  topList:{}
+  topList:{},
+  searchHistory: loadSearch()
 }
 
 
