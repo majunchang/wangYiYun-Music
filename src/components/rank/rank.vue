@@ -59,13 +59,13 @@
       _getTopList(){
         getTopList().then((res)=>{
           if(res.code == 0){
-            console.log(res);
+           // console.log(res);
             this.topList = res.data.topList
           }
         })
       },
       selectItem(item){
-          console.log('majunchang');
+         // console.log('majunchang');
         this.$router.push({
           path:`/rank/${item.id}`
         })

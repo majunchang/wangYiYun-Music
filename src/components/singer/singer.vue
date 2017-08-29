@@ -36,7 +36,7 @@
       handlePlaylist(playlist){
         const bottom  = playlist.length>0?'60px':'';
         this.$refs.singer.style.bottom = bottom;
-        console.log(this.$refs.singer);
+       // console.log(this.$refs.singer);
         this.$refs.list.refresh();
       },
         // mapMutations  在methods中声明

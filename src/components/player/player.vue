@@ -29,7 +29,7 @@
               </div>
             </div>
             <div class="playing-lyric-wrapper">
-              <div class="playing-lyric"></div>
+              <div class="playing-lyric">{{playingLyric}}</div>
             </div>
           </div>
           <scroll class="middle-r" ref='lyricList' :data='currentLyric&&currentLyric.lines'>
@@ -88,11 +88,12 @@
             <i @click.stop="togglePlaying" class='icon-mini' :class="miniIcon"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop='showPlaylist'>
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <playlist ref='playlist'></playlist>
     <audio :src="currentSong.url" ref='audio' @canplay='ready' @error='error' @timeupdate='timeupdate'
            @ended='end'></audio>
   </div>
@@ -114,6 +115,8 @@
   import lyricParser from 'lyric-parser'
   // 引入滚动组件
   import scroll from '../../base/scroll.vue'
+  // 引入播放列表组件
+  import playlist from 'components/playlist/playlist'
 
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration'
@@ -123,7 +126,8 @@
     components: {
       ProgressBar,
       ProgressCircle,
-      scroll
+      scroll,
+      playlist
     },
     data() {
       return {
@@ -133,7 +137,8 @@
         modeDesDisapper: false,
         currentLyric: null,
         currentLineNum: 0,
-        currentShow: 'cd'
+        currentShow: 'cd',
+        playingLyric: ''
       }
     },
     created() {
@@ -279,10 +284,10 @@
         if (!this.songReady) {
           return
         }
-        if(this.playlist.length ===1){
-            this.loop();
-            return
-        }else {
+        if (this.playlist.length === 1) {
+          this.loop();
+          return
+        } else {
           let index = this.currentIndex + 1;
           if (index === this.playlist.length) {
             index = 0
@@ -346,8 +351,8 @@
         if (!this.playing) {
           this.togglePlaying();
         }
-        console.log(this.currentSong.duration);
-        console.log(currentPercentTime);
+//        console.log(this.currentSong.duration);
+//        console.log(currentPercentTime);
         if (this.currentLyric) {
           this.currentLyric.seek(currentPercentTime * 1000);
         }
@@ -456,10 +461,17 @@
         this.$refs.middleL.style.opacity = opacity
         this.$refs.middleL.style[transitionDuration] = `${time}ms`
         this.touch.initiated = false
+      },
+      showPlaylist(){
+        //  调用组件里的方法
+        this.$refs.playlist.show();
       }
     },
     watch: {
       currentSong(newSong, oldSong) {
+        if (!newSong.id) {
+          return
+        }
         if (newSong.id === oldSong.id) {
           return
         }
