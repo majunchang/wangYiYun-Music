@@ -34,7 +34,11 @@ const mutations = {
   },
   [types.SET_SEARCHHISTORY](state,searchHistory){
     state.searchHistory = searchHistory;
+  },
+  [types.SET_FAVORAITELIST](state,favoriteList){
+    state.favoriteList = favoriteList;
   }
+
 }
 
 export  default  mutations

@@ -68,7 +68,7 @@
               <i class="icon-next" @click='next'></i>
             </div>
             <div class="icon i-right">
-              <i class='icon icon-not-favorite'></i>
+              <i  @click="toggleFavorite(currentSong)" class="'icon" :class="getFavoriteIcon(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -119,8 +119,7 @@
   import playlist from 'components/playlist/playlist'
 
   const transform = prefixStyle('transform')
-  const transitionDuration = prefixStyle('transitionDuration'
-  )
+  const transitionDuration = prefixStyle('transitionDuration')
   export default {
     props: {},
     components: {
@@ -465,6 +464,19 @@
       showPlaylist(){
         //  调用组件里的方法
         this.$refs.playlist.show();
+      },
+      toggleFavorite(song){
+        if (this.isFavorite(song)) {
+          this.deleteFavoriteList(song)
+        } else {
+          this.saveFavoriteList(song)
+        }
+      },
+      getFavoriteIcon(song){
+        if (this.isFavorite(song)) {
+          return 'icon-favorite'
+        }
+        return 'icon-not-favorite'
       }
     },
     watch: {

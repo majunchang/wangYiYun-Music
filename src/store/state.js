@@ -4,7 +4,7 @@
 
 // 引入设计模式
   import {playMode} from 'common/js/config'
-  import {loadSearch} from 'common/js/cache'
+  import {loadSearch,loadFavorite} from 'common/js/cache'
 
 const state = {
   singer:{},
@@ -16,7 +16,8 @@ const state = {
   currentIndex:-1,
   disc:{},
   topList:{},
-  searchHistory: loadSearch()
+  searchHistory: loadSearch(),
+  favoriteList:loadFavorite()
 }
 
 
