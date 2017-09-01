@@ -4,8 +4,8 @@
       <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class='title'>
-            <i class="icon"></i>
-            <span class='text'></span>
+            <i class="icon" :class='iconMode' @click='changeMode'></i>
+            <span class='text'>{{modeDes}}</span>
             <span class='clear' @click="showConfirm">
                 <i class="icon-clear"></i>
               </span>
@@ -16,8 +16,8 @@
             <li class='item' ref='list' v-for='(item,index) in sequenceList' @click='selectItem(item,index)'>
               <i class='current' :class='getCurrentIcon(item)'></i>
               <span class='text'>{{item.name}}</span>
-              <span class='like'>
-                <i class='icon-favorite'></i>
+              <span class='like' @click='toggleFavorite(item)'>
+                <i :class='getFavoriteIcon(item)'></i>
               </span>
               <span class='delete' @click.stop='deleteOne(item)'>
                 <i class='icon-delete'></i>
@@ -26,7 +26,7 @@
           </ul>
         </scroll>
         <div class='list-operate'>
-          <div class="add">
+          <div class="add" @click='addSong'>
             <i class="icon-add"></i>
             <span class="text">添加歌曲到队列</span>
           </div>
@@ -36,8 +36,8 @@
         </div>
       </div>
       <confirm ref='confirm' @confirm='confirmClear' text='是否清空播放列表' confirmBtnText='清空'>
-
       </confirm>
+      <addSong ref='addSong'></addSong>
     </div>
   </transition>
 </template>
@@ -48,11 +48,16 @@
   import Scroll from 'base/scroll'
   import Confirm from '../../base/confirm.vue'
 
+  import {playerMixin} from '../../common/js/mixin'
+  import AddSong from '../../components/add-song/add-song.vue'
+
   export default{
+    mixins: [playerMixin],
     props: {},
     components: {
       Scroll,
-      Confirm
+      Confirm,
+      AddSong
     },
     data(){
       return {
@@ -68,7 +73,10 @@
         'currentSong',
         'mode',
         'playlist'
-      ])
+      ]),
+      modeDes(){
+          return this.mode===playMode.sequence?'循环播放':this.mode===playMode.random?'随机播放':'单曲循环'
+      }
     },
     methods: {
       ...mapMutations({
@@ -115,8 +123,8 @@
       },
       deleteOne(item){
         this.deleteSong(item);
-        if(!this.playlist.length){
-            this.hide();
+        if (!this.playlist.length) {
+          this.hide();
         }
       },
       showConfirm(){
@@ -125,6 +133,9 @@
       confirmClear(){
         this.deleteSongList();
         this.hide();
+      },
+      addSong(){
+          this.$refs.addSong.show();
       }
     },
     watch: {

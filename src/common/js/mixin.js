@@ -105,3 +105,41 @@ export const playerMixin = {
   }
 
 }
+
+
+export const searchMixin = {
+  data(){
+    return {
+      searchMsg:'',
+      refreshDelay:120
+    }
+  },
+  computed:{
+    ...mapGetters([
+      'searchHistory'
+    ])
+  },
+  methods:{
+    onInputMsg(searchMsg){
+      console.log('majunchang');
+      this.searchMsg = searchMsg
+    },
+    blurInput(){
+      this.$refs.searchBox.blur()
+    },
+    addMsg(msg){
+      this.$refs.searchBox.setMsg(msg);
+    },
+    deleteSearchHistory(msg){
+      console.log('zhangtianai');
+      this.deleteSearchHistory(msg);
+    },
+    saveSearch(){
+      this.saveSearchHistory(this.searchMsg)
+    },
+    ...mapActions([
+      'saveSearchHistory',
+      'deleteSearchHistory'
+    ])
+  }
+}

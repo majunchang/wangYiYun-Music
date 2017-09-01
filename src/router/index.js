@@ -12,6 +12,9 @@ import singerDetail from '../components/singer-detail/singer-detail.vue'
 // 引入 歌单详情页
 import Disc from '../components/disc/disc.vue'
 import topList from '../components/top-list/toplist.vue'
+// 引入用户中心组件
+import userCenter from '../components/user-center/user-center.vue'
+
 
 Vue.use(Router)
 
@@ -24,10 +27,10 @@ export default new Router({
     {
       path: '/recommend',
       component: recommend,
-      children:[
+      children: [
         {
-          path:':id',
-          component:Disc
+          path: ':id',
+          component: Disc
         }
       ]
     },
@@ -55,12 +58,16 @@ export default new Router({
     {
       path: '/search',
       component: search,
-      children:[
+      children: [
         {
-          path:':id',
-          component:singerDetail
+          path: ':id',
+          component: singerDetail
         }
       ]
+    },
+    {
+      path: '/user',
+      component: userCenter
     }
   ]
 })

@@ -4,7 +4,7 @@
       <search-box ref='searchBox' @inputMsg='onInputMsg'></search-box>
     </div>
     <div class="shortcut-wrapper" ref='shortcutWrapper' v-show='!searchMsg'>
-      <div class="shortcut" ref='shortcut'>
+      <scroll class="shortcut" ref='shortcut' :refreshDelay="refreshDelay" :data="shortcut">
         <div class="hot-key">
           <h1 class='title'>热门搜索</h1>
           <ul>
@@ -16,17 +16,22 @@
         <div class="search-history" v-show='searchHistory.length'>
           <h1 class="title">
             <span class='text'>搜索历史</span>
-            <span class="clear">
-            <i class='icon-clear'></i>
+            <span class="clear" @click="showConfirm">
+            <i class='icon-clear' ></i>
           </span>
           </h1>
-          <search-list :searches='searchHistory'></search-list>
+          <search-list
+            :searches='searchHistory'
+            @delete='deleteSearchHistory'
+            @select='addMsg'
+          ></search-list>
         </div>
-    </div>
+    </scroll>
     </div>
     <div class="search-result" v-show='searchMsg' ref='searchResult'>
       <suggest @listScroll="blurInput" :searchMsg='searchMsg' ref='suggest' @selected='saveSearch'></suggest>
     </div>
+    <confirm ref='confirm' @confirm='clearSearchHistory'  text='是否清空所有搜索历史' confirmBtnText="清空"></confirm>
     <router-view></router-view>
   </div>
 </template>
@@ -39,14 +44,19 @@
   import {mapActions, mapGetters} from 'vuex'
   // 引入歌曲搜索列表
   import searchList from '../../base/search-list.vue'
-  import {playlistMixin} from 'common/js/mixin'
+  import {playlistMixin,searchMixin} from 'common/js/mixin'
+
+  import Confirm from '../../base/confirm.vue'
+  import Scroll from '../../base/scroll.vue'
 
   export default{
-    mixins: [playlistMixin],
+    mixins: [playlistMixin,searchMixin],
     components: {
       SearchBox,
       suggest,
-      searchList
+      searchList,
+      Confirm,
+      Scroll
     },
     props: {},
     data(){
@@ -61,12 +71,15 @@
     computed: {
       ...mapGetters([
         'searchHistory'
-      ])
+      ]),
+      shortcut() {
+        return this.hotKey.concat(this.searchHistory)
+      }
     },
     methods: {
-      onInputMsg(searchMsg){
-        this.searchMsg = searchMsg
-      },
+//      onInputMsg(searchMsg){
+//        this.searchMsg = searchMsg
+//      },
       _getHotKey(){
         getHotKey().then((res) => {
           if (res.code === 0) {
@@ -75,17 +88,20 @@
           }
         })
       },
-      addMsg(msg){
-        this.$refs.searchBox.setMsg(msg);
-      },
-      blurInput(){
-        this.$refs.searchBox.blur()
-      },
-      saveSearch(){
-        this.saveSearchHistory(this.searchMsg)
+//      addMsg(msg){
+//        this.$refs.searchBox.setMsg(msg);
+//      },
+//      blurInput(){
+//        this.$refs.searchBox.blur()
+//      },
+//      saveSearch(){
+//        this.saveSearchHistory(this.searchMsg)
+//      },
+      showConfirm(){
+        this.$refs.confirm.show()
       },
       ...mapActions([
-        'saveSearchHistory',
+        'clearSearchHistory'
       ]),
       handlePlaylist(playlist){
         var bottom = playlist.length > 0 ? '60px' : 0;
@@ -94,6 +110,15 @@
 
         this.$refs.shortcutWrapper.style.bottom = bottom
         //this.$refs.shortcut.refresh()
+      },
+    },
+    watch:{
+      searchMsg(newVal){
+          if(!newVal){
+            setTimeout(() => {
+              this.$refs.shortcut.refresh()
+            }, 20)
+          }
       }
     }
   }

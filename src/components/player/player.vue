@@ -100,7 +100,7 @@
 </template>
 
 <script>
-  import {mapGetters, mapMutations} from 'vuex'
+  import {mapGetters, mapMutations,mapActions} from 'vuex'
   import {prefixStyle} from 'common/js/dom'
   import animations from 'create-keyframe-animation'
   // 引入 进度条基础组件
@@ -155,6 +155,7 @@
         'currentIndex',
         'mode',
         'sequenceList',
+        'favoriteList'
       ]),
       playIcon() {
         return this.playing ? 'icon-pause' : 'icon-play'
@@ -309,6 +310,7 @@
         //  e就是 播放器的触发元素
         /*该事件在音频/视频的播放位置发生改变时触发  通常与currentTime属性一起使用 返回音频/视频的播放位置（以秒计）*/
         this.currentTime = e.target.currentTime;
+        this.savePlayHistory(this.currentSong);
       },
       end() {
         // 当一首播放结束的时候 要判断市以什么方式播放的 如果市单曲循环的话 那么我们就不能直接能直接 播放下一个
@@ -472,12 +474,23 @@
           this.saveFavoriteList(song)
         }
       },
+      isFavorite(song){
+         var index =  this.favoriteList.findIndex((item)=>{
+              return item.id===song.id;
+          })
+        return index>-1
+      },
       getFavoriteIcon(song){
         if (this.isFavorite(song)) {
           return 'icon-favorite'
         }
         return 'icon-not-favorite'
-      }
+      },
+      ...mapActions([
+          'saveFavoriteList',
+          'deleteFavoriteList',
+          'savePlayHistory'
+      ])
     },
     watch: {
       currentSong(newSong, oldSong) {

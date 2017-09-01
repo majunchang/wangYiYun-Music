@@ -1,8 +1,8 @@
 <template>
   <div class='search-list' v-show='searches.length'>
-    <li class="search-item" v-for='item in searches'>
+    <li class="search-item" v-for='item in searches' @click='selectItem(item)'>
       <span class='text'>{{item}}</span>
-      <span class='icon'>
+      <span class='icon' @click.stop='deleteOne(item)'>
       <i class='icon-delete'></i>
     </span>
     </li>
@@ -22,10 +22,17 @@
       return {}
     },
     created(){
-      console.log(this.searches);
+      //console.log(this.searches);
     },
     computed: {},
-    methods: {}
+    methods: {
+      selectItem(item){
+        this.$emit('select', item);
+      },
+      deleteOne(item){
+        this.$emit('delete', item);
+      }
+    }
   }
 </script>
 
