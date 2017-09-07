@@ -10,7 +10,7 @@
 
 ![mark](http://oneg19f80.bkt.clouddn.com/blog/20170907/142929183.png)  ![mark](http://oneg19f80.bkt.clouddn.com/blog/20170907/142948018.png)
 
-![mark](http://oneg19f80.bkt.clouddn.com/blog/20170907/143034498.png) ![mark](http://oneg19f80.bkt.clouddn.com/blog/20170907/143128496.png)
+![mark](http://oneg19f80.bkt.clouddn.com/blog/20170907/143034498.png)  ![mark](http://oneg19f80.bkt.clouddn.com/blog/20170907/143128496.png)
 
 ![mark](http://oneg19f80.bkt.clouddn.com/blog/20170907/143200457.png) ![mark](http://oneg19f80.bkt.clouddn.com/blog/20170907/143303362.png)
 
@@ -26,7 +26,7 @@
  */
 import originJsonp from 'jsonp'
 
-// 三个参数粉笔为 目标url 需要拼接在url上的参数 以及jsonp插件 需要的option
+// 三个参数分别为 目标url 需要拼接在url上的参数 以及jsonp插件 需要的option
 export default function jsonp(url,paramdata,options) {
   // 在这里引入一个  拼接字符串的方法
   url += (url.indexOf('?')< 0 ? '?':'&')+param(paramdata);
