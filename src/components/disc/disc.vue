@@ -1,6 +1,6 @@
 <template>
   <transition name='slide'>
-    <music-list :title="title" :bg-image="bgImage" :songs="songs"> </music-list>
+    <music-list :title="title" :bg-image="bgImage" :songs="songs"></music-list>
   </transition>
 </template>
 
@@ -17,11 +17,11 @@
     },
     data(){
       return {
-          songs:[]
+        songs: []
       }
     },
     created(){
-        this.getSongListDetail()
+      this.getSongListDetail()
     },
     computed: {
       title(){
@@ -36,24 +36,23 @@
     },
     methods: {
       getSongListDetail(){
-          if(!this.disc.dissid){
-            this.$router.push('/recommend')
-            return
+        if (!this.disc.dissid) {
+          this.$router.push('/recommend')
+          return
+        }
+        console.log(this.disc);
+        getSongList(this.disc.dissid).then((res) => {
+//            console.log(res);
+          if (res.code === 0) {
+//            console.log(res.cdlis[0].songlist);
+            this.songs = this.normalizeSongs(res.cdlis[0].songlist)
           }
-          console.log(this.disc);
-          console.log('majunchang');
-          getSongList(this.disc.dissid).then((res)=>{
-            console.log(res);
-            if(res.code===0){
-              console.log(res.cdlis[0].songlist);
-              this.songs = this.normalizeSongs(res.cdlis[0].songlist)
-            }
-          })
+        })
       },
       normalizeSongs(list){
         let ret = [];
-        list.forEach((musicData)=>{
-          if(musicData.songid && musicData.albummid){
+        list.forEach((musicData) => {
+          if (musicData.songid && musicData.albummid) {
             ret.push(createSong(musicData));
           }
         })

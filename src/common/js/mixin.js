@@ -121,7 +121,6 @@ export const searchMixin = {
   },
   methods:{
     onInputMsg(searchMsg){
-      console.log('majunchang');
       this.searchMsg = searchMsg
     },
     blurInput(){
