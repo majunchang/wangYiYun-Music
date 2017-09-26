@@ -101,7 +101,7 @@
       }),
       selectItem(item){
         // 点击item之后 页面进行跳转 并且将你点击的这个 存储进入vuex里面
-        console.log(item);
+//        console.log(item);
         this.$router.push({
           path:`/recommend/${item.dissid}`
         })

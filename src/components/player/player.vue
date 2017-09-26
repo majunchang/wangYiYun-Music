@@ -68,7 +68,7 @@
               <i class="icon-next" @click='next'></i>
             </div>
             <div class="icon i-right">
-              <i  @click="toggleFavorite(currentSong)" class="'icon" :class="getFavoriteIcon(currentSong)"></i>
+              <i @click="toggleFavorite(currentSong)" class="'icon" :class="getFavoriteIcon(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -94,13 +94,13 @@
       </div>
     </transition>
     <playlist ref='playlist'></playlist>
-    <audio :src="currentSong.url" ref='audio' @canplay='ready' @error='error' @timeupdate='timeupdate'
+    <audio :src="currentSong.url" ref='audio' @play='ready' @error='error' @timeupdate='timeupdate'
            @ended='end'></audio>
   </div>
 </template>
 
 <script>
-  import {mapGetters, mapMutations,mapActions} from 'vuex'
+  import {mapGetters, mapMutations, mapActions} from 'vuex'
   import {prefixStyle} from 'common/js/dom'
   import animations from 'create-keyframe-animation'
   // 引入 进度条基础组件
@@ -262,7 +262,7 @@
         if (!this.songReady) {
           return
         }
-        console.log(this.playlist.length);
+//        console.log(this.playlist.length);
         if (this.playlist.length === 1) {
           this.loop();
           return
@@ -271,7 +271,7 @@
           if (index === -1) {
             index = this.playlist.length - 1;
           }
-          this.songReady = true;
+          this.songReady = false;
           if (!this.playing) {
             this.togglePlaying()
           }
@@ -292,7 +292,7 @@
           if (index === this.playlist.length) {
             index = 0
           }
-          this.songReady = true;
+          this.songReady = false;
           if (!this.playing) {
             this.togglePlaying()
           }
@@ -388,6 +388,9 @@
       getLyric() {
         // lyricParser
         this.currentSong.getLyrics().then((lyric) => {
+          if (this.currentSong.lyric != lyric) {
+            return
+          }
           // 将歌词进行解析
           this.currentLyric = new lyricParser(lyric, this.handleLyric);
           if (this.playing) {
@@ -475,10 +478,10 @@
         }
       },
       isFavorite(song){
-         var index =  this.favoriteList.findIndex((item)=>{
-              return item.id===song.id;
-          })
-        return index>-1
+        var index = this.favoriteList.findIndex((item) => {
+          return item.id === song.id;
+        })
+        return index > -1
       },
       getFavoriteIcon(song){
         if (this.isFavorite(song)) {
@@ -487,9 +490,9 @@
         return 'icon-not-favorite'
       },
       ...mapActions([
-          'saveFavoriteList',
-          'deleteFavoriteList',
-          'savePlayHistory'
+        'saveFavoriteList',
+        'deleteFavoriteList',
+        'savePlayHistory'
       ])
     },
     watch: {
@@ -505,12 +508,12 @@
           this.currentLyric.stop();
           this.currentTime = 0
         }
-        //console.log(this.currentSong);
-        this.$nextTick(() => {
+        clearTimeout(this.timer)
+        this.timer = setTimeout(() => {
           this.$refs.audio.play();
           // 在这里将获取歌词并格式化的代码 封装为一个方法
           this.getLyric()
-        })
+        }, 1000)
       },
       playing() {
         const audio = this.$refs.audio;

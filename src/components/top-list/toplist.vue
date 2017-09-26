@@ -47,7 +47,7 @@
         }
         getTopMUsicList(this.topList.id).then((res) => {
           if (res.code === 0) {
-            console.log(res);
+//            console.log(res);
              this.songs = this.normalizeSongs(res.songlist)
           }
         })
