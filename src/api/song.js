@@ -6,10 +6,10 @@ import axios from 'axios'
 
 // 在这里仿照 推荐页面的 歌单列表数据 使用axios配合代理去获取
 
-export  function getLyric(mid) {
-  const  url = '/api/lyric'
+export function getLyric (mid) {
+  const url = '/api/lyric'
 
-  const data = Object.assign({},commonParams,{
+  const data = Object.assign({}, commonParams, {
     songmid: mid,
     platform: 'yqq',
     hostUin: 0,
@@ -19,9 +19,9 @@ export  function getLyric(mid) {
     format: 'json'
   })
 
-  return axios.get(url,{
-    params:data
-  }).then((res)=>{
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
     return Promise.resolve(res.data)
   })
 }

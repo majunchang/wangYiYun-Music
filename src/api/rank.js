@@ -1,7 +1,7 @@
 import jsonp from 'common/js/jsonp'
 import {commonParams, options} from './config'
 
-export function getTopList() {
+export function getTopList () {
   const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg'
 
   const data = Object.assign({}, commonParams, {
@@ -13,11 +13,10 @@ export function getTopList() {
   return jsonp(url, data, options)
 }
 
-
 //  获取榜单数据 的方法
 
-export  function getTopMUsicList(topid) {
-  const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg';
+export function getTopMUsicList (topid) {
+  const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg'
 
   const data = Object.assign({}, commonParams, {
     topid,

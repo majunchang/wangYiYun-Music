@@ -128,7 +128,7 @@
       scroll,
       playlist
     },
-    data() {
+    data () {
       return {
         songReady: false,
         currentTime: '',
@@ -140,10 +140,10 @@
         playingLyric: ''
       }
     },
-    created() {
+    created () {
       this.touch = {}
     },
-    mounted() {
+    mounted () {
 
     },
     computed: {
@@ -157,25 +157,25 @@
         'sequenceList',
         'favoriteList'
       ]),
-      playIcon() {
+      playIcon () {
         return this.playing ? 'icon-pause' : 'icon-play'
       },
-      miniIcon() {
+      miniIcon () {
         return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
       },
-      cdCls() {
+      cdCls () {
         return this.playing ? 'play' : 'play pause'
       },
-      disableCls() {
+      disableCls () {
         return this.songReady ? '' : 'disabled'
       },
-      percent() {
-        return this.currentTime / this.currentSong.duration;
+      percent () {
+        return this.currentTime / this.currentSong.duration
       },
-      iconMode() {
+      iconMode () {
         return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
       },
-      modeDes() {
+      modeDes () {
         return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.loop ? '单曲循环' : '随机播放'
       }
     },
@@ -185,17 +185,17 @@
         setPlayingState: 'SET_PLAYING_STATE',
         setCurrentIndex: 'SET_CURRENT_INDEX',
         setPlayMode: 'SET_PLAY_MODE',
-        setPlaylist: 'SET_PLAYLIST',
+        setPlaylist: 'SET_PLAYLIST'
       }),
-      back() {
-        this.setFullScreen(false);
+      back () {
+        this.setFullScreen(false)
       },
-      open() {
-        this.setFullScreen(true);
+      open () {
+        this.setFullScreen(true)
       },
       // 注册 cd img的动画效果
-      enter(el, done) {
-        const {x, y, scale} = this.getPosAndScale();
+      enter (el, done) {
+        const {x, y, scale} = this.getPosAndScale()
 
         let animation = {
           0: {
@@ -219,100 +219,95 @@
         })
         animations.runAnimation(this.$refs.cdWrapper, 'move', done)
       },
-      afterEnter() {
+      afterEnter () {
         animations.unregisterAnimation('move')
         this.$refs.cdWrapper.style.animation = ''
       },
-      leave(el, done) {
+      leave (el, done) {
         this.$refs.cdWrapper.style.transition = 'all 0.8s'
         const {x, y, scale} = this.getPosAndScale()
         this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
         this.$refs.cdWrapper.addEventListener('transitionend', done)
       },
-      afterLeave() {
+      afterLeave () {
         this.$refs.cdWrapper.style.transition = ''
         this.$refs.cdWrapper.style[transform] = ''
       },
-      getPosAndScale() {
+      getPosAndScale () {
         // 在这里方法里面 我们需要计算出  偏移的x,y值 以及放大缩小的倍数
         // 这里的偏移是 根据中心点做计算的
-        const smallWidth = 40;
-        const smallLeft = 40;
+        const smallWidth = 40
+        const smallLeft = 40
         const smallBottom = 30
-        const cdTop = 80;
-        const cdWidth = window.innerWidth * 0.8;
-        const scale = smallWidth / cdWidth;
-        const x = -(window.innerWidth / 2 - smallLeft);
-        const y = window.innerHeight - cdTop - cdWidth / 2 - smallBottom;
+        const cdTop = 80
+        const cdWidth = window.innerWidth * 0.8
+        const scale = smallWidth / cdWidth
+        const x = -(window.innerWidth / 2 - smallLeft)
+        const y = window.innerHeight - cdTop - cdWidth / 2 - smallBottom
         return {
           x,
           y,
           scale
         }
       },
-      togglePlaying() {
-        this.setPlayingState(!this.playing);
+      togglePlaying () {
+        this.setPlayingState(!this.playing)
         // 暂停的时候 歌词就不要继续进行了
         if (this.currentLyric) {
-          this.currentLyric.togglePlay();
+          this.currentLyric.togglePlay()
         }
       },
-      prev() {
-        //  实现上一曲下一曲的原理 是 通过改变索引值 利用songList的索引 改变当前的currentSong  这个以改变 我们的watch就会被触发  就会播放音乐
+      prev () {
+      //  实现上一曲下一曲的原理 是 通过改变索引值 利用songList的索引 改变当前的currentSong  这个以改变 我们的watch就会被触发  就会播放音乐
         if (!this.songReady) {
           return
         }
-//        console.log(this.playlist.length);
+        //        console.log(this.playlist.length);
         if (this.playlist.length === 1) {
-          this.loop();
-          return
+          this.loop()
         } else {
-          let index = this.currentIndex - 1;
+          let index = this.currentIndex - 1
           if (index === -1) {
-            index = this.playlist.length - 1;
+            index = this.playlist.length - 1
           }
-          this.songReady = false;
+          this.songReady = false
           if (!this.playing) {
             this.togglePlaying()
           }
           this.setCurrentIndex(index)
         }
-
-
       },
-      next() {
+      next () {
         if (!this.songReady) {
           return
         }
         if (this.playlist.length === 1) {
-          this.loop();
-          return
+          this.loop()
         } else {
-          let index = this.currentIndex + 1;
+          let index = this.currentIndex + 1
           if (index === this.playlist.length) {
             index = 0
           }
-          this.songReady = false;
+          this.songReady = false
           if (!this.playing) {
             this.togglePlaying()
           }
-          this.setCurrentIndex(index);
+          this.setCurrentIndex(index)
         }
-
       },
-      ready() {
-        this.songReady = true;
+      ready () {
+        this.songReady = true
       },
-      error() {
-        this.songReady = true;
+      error () {
+        this.songReady = true
       },
-      timeupdate(e) {
+      timeupdate (e) {
         //  e就是 播放器的触发元素
-        /*该事件在音频/视频的播放位置发生改变时触发  通常与currentTime属性一起使用 返回音频/视频的播放位置（以秒计）*/
-        this.currentTime = e.target.currentTime;
-        this.savePlayHistory(this.currentSong);
+        /* 该事件在音频/视频的播放位置发生改变时触发  通常与currentTime属性一起使用 返回音频/视频的播放位置（以秒计） */
+        this.currentTime = e.target.currentTime
+        this.savePlayHistory(this.currentSong)
       },
-      end() {
+      end () {
         // 当一首播放结束的时候 要判断市以什么方式播放的 如果市单曲循环的话 那么我们就不能直接能直接 播放下一个
         if (this.mode === playMode.loop) {
           this.loop()
@@ -320,142 +315,141 @@
           this.next()
         }
       },
-      loop() {
-        this.$refs.audio.currentTime = 0;
-        this.$refs.audio.play();
+      loop () {
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
         // 单曲循环的时候  让歌词回到原点
         if (this.currentLyric) {
           this.currentLyric.seek(0)
         }
       },
-      format(interval) {
+      format (interval) {
         // 该函数的作用是 将时间戳格式转化为我们的秒数格式
         // 首先将传入的数  进行向下取整  然后 获取分钟和秒数
-        interval = interval | 0;
-        var minute = interval / 60 | 0;
-        var second = this.pad(interval % 60);
+        interval = interval | 0
+        var minute = interval / 60 | 0
+        var second = this.pad(interval % 60)
         return `${minute}:${second}`
       },
-      pad(time, n = 2) {
+      pad (time, n = 2) {
         //  time的length 是否满足 我们定制的位数
-        var len = time.toString().length;
+        var len = time.toString().length
         while (len < n) {
-          time = '0' + time;
-          len++;
+          time = '0' + time
+          len++
         }
         return time
       },
-      percentChange(percent) {
+      percentChange (percent) {
         //  在这里需要将 audio标签的currentTime 更改了
-        this.$refs.audio.currentTime = this.currentSong.duration * percent;
-        var currentPercentTime = this.currentSong.duration * percent;
+        this.$refs.audio.currentTime = this.currentSong.duration * percent
+        var currentPercentTime = this.currentSong.duration * percent
         if (!this.playing) {
-          this.togglePlaying();
+          this.togglePlaying()
         }
-//        console.log(this.currentSong.duration);
-//        console.log(currentPercentTime);
+        //        console.log(this.currentSong.duration);
+        //        console.log(currentPercentTime);
         if (this.currentLyric) {
-          this.currentLyric.seek(currentPercentTime * 1000);
+          this.currentLyric.seek(currentPercentTime * 1000)
         }
       },
-      changeMode() {
+      changeMode () {
         // 获取了mode  并更改了mode
-        this.modeDesDisapper = true;
-        clearTimeout(timer);
+        this.modeDesDisapper = true
+        clearTimeout(timer)
         var timer = setTimeout(() => {
-          this.modeDesDisapper = false;
+          this.modeDesDisapper = false
         }, 500)
-        const mode = (this.mode + 1) % 3;
+        const mode = (this.mode + 1) % 3
         this.setPlayMode(mode)
         // 根据mode  去改变歌曲列表的 数组
         let finalList = null
         if (mode === playMode.random) {
-          finalList = shuffle(this.sequenceList);
+          finalList = shuffle(this.sequenceList)
         } else {
           finalList = this.sequenceList
         }
 
         // 当你改变播放模式的时候 当前播放的歌曲 不应该也被改变 所以我们在这里  需要借助一个方法  去保持当前的歌曲不被改变
-        this.resetCurrentIndex(finalList);
-        this.setPlaylist(finalList);
+        this.resetCurrentIndex(finalList)
+        this.setPlaylist(finalList)
       },
-      resetCurrentIndex(list) {
+      resetCurrentIndex (list) {
         var currentIndex = list.findIndex((item) => {
           return item.id === this.currentSong.id
         })
         this.setCurrentIndex(currentIndex)
       },
-      getLyric() {
+      getLyric () {
         // lyricParser
         this.currentSong.getLyrics().then((lyric) => {
           if (this.currentSong.lyric != lyric) {
             return
           }
           // 将歌词进行解析
-          this.currentLyric = new lyricParser(lyric, this.handleLyric);
+          this.currentLyric = new lyricParser(lyric, this.handleLyric)
           if (this.playing) {
             // 这是lyric-parser自带的插件
-            this.currentLyric.play();
+            this.currentLyric.play()
           }
         })
       },
-      handleLyric({lineNum, txt}) {
-        this.currentLineNum = lineNum;
+      handleLyric ({lineNum, txt}) {
+        this.currentLineNum = lineNum
         if (this.currentLineNum > 5) {
-          let lineEle = this.$refs.lyricLine[lineNum - 5];
+          let lineEle = this.$refs.lyricLine[lineNum - 5]
           this.$refs.lyricList.scrollToElement(lineEle, 1000)
         } else {
           this.$refs.lyricList.scrollTo(0, 0, 1000)
         }
-        this.playingLyric = txt;
+        this.playingLyric = txt
       },
-      middleTouchStart(e) {
-        this.touch.initiated = true;
-        const touch = e.touches[0];
-        this.touch.startX = touch.pageX;
-        this.touch.startY = touch.pageY;
+      middleTouchStart (e) {
+        this.touch.initiated = true
+        const touch = e.touches[0]
+        this.touch.startX = touch.pageX
+        this.touch.startY = touch.pageY
       },
-      middleTouchMove(e) {
+      middleTouchMove (e) {
         if (!this.touch.initiated) {
           return
         }
-        const touch = e.touches[0];
-        const deltax = touch.pageX - this.touch.startX;
-        const deltay = touch.pageY - this.touch.startY;
+        const touch = e.touches[0]
+        const deltax = touch.pageX - this.touch.startX
+        const deltay = touch.pageY - this.touch.startY
         if (Math.abs(deltay) > Math.abs(deltax)) {
           return
         }
-        //首选算出 歌词页面 距离屏幕右边的距离
+        // 首选算出 歌词页面 距离屏幕右边的距离
         const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
-        const offsetWidth = Math.min(0, Math.max(-window.innerWidth, deltax + left));
-        this.touch.percent = Math.abs(deltax / window.innerWidth);
+        const offsetWidth = Math.min(0, Math.max(-window.innerWidth, deltax + left))
+        this.touch.percent = Math.abs(deltax / window.innerWidth)
         this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`
         this.$refs.lyricList.$el.style[transitionDuration] = 0
         this.$refs.middleL.style.opacity = 1 - this.touch.percent
         this.$refs.middleL.style[transitionDuration] = 0
-
       },
-      middleTouchEnd() {
+      middleTouchEnd () {
         let offsetWidth
         let opacity
         if (this.currentShow === 'cd') {
           if (this.touch.percent > 0.1) {
             // 在这里 我们约定 只要大于0。1  也就是说 滑动距离超过10%  那么我们就让它进行移动
-            offsetWidth = -window.innerWidth;
+            offsetWidth = -window.innerWidth
             opacity = 0
             this.currentShow = 'lyric'
           } else {
             // 这是从右向左划的时候
-            offsetWidth = 0;
+            offsetWidth = 0
             opacity = 1
           }
         } else {
           if (this.touch.percent < 0.9) {
-            offsetWidth = 0;
-            opacity = 1;
+            offsetWidth = 0
+            opacity = 1
             this.currentShow = 'cd'
           } else {
-            offsetWidth = -window.innerWidth;
+            offsetWidth = -window.innerWidth
             opacity = 0
           }
         }
@@ -466,24 +460,24 @@
         this.$refs.middleL.style[transitionDuration] = `${time}ms`
         this.touch.initiated = false
       },
-      showPlaylist(){
+      showPlaylist () {
         //  调用组件里的方法
-        this.$refs.playlist.show();
+        this.$refs.playlist.show()
       },
-      toggleFavorite(song){
+      toggleFavorite (song) {
         if (this.isFavorite(song)) {
           this.deleteFavoriteList(song)
         } else {
           this.saveFavoriteList(song)
         }
       },
-      isFavorite(song){
+      isFavorite (song) {
         var index = this.favoriteList.findIndex((item) => {
-          return item.id === song.id;
+          return item.id === song.id
         })
         return index > -1
       },
-      getFavoriteIcon(song){
+      getFavoriteIcon (song) {
         if (this.isFavorite(song)) {
           return 'icon-favorite'
         }
@@ -496,7 +490,7 @@
       ])
     },
     watch: {
-      currentSong(newSong, oldSong) {
+      currentSong (newSong, oldSong) {
         if (!newSong.id) {
           return
         }
@@ -505,22 +499,22 @@
         }
         //  切换歌曲的时候 去掉定时器
         if (this.currentLyric) {
-          this.currentLyric.stop();
+          this.currentLyric.stop()
           this.currentTime = 0
         }
         clearTimeout(this.timer)
         this.timer = setTimeout(() => {
-          this.$refs.audio.play();
+          this.$refs.audio.play()
           // 在这里将获取歌词并格式化的代码 封装为一个方法
           this.getLyric()
         }, 1000)
       },
-      playing() {
-        const audio = this.$refs.audio;
+      playing () {
+        const audio = this.$refs.audio
         this.$nextTick(() => {
-          this.playing ? audio.play() : audio.pause();
+          this.playing ? audio.play() : audio.pause()
         })
-      },
+      }
     }
   }
 </script>

@@ -5,7 +5,7 @@ import jsonp from 'common/js/jsonp'
 import {commonParams, options} from './config'
 import axios from 'axios'
 
-export function getRecommend() {
+export function getRecommend () {
   const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
 
   const paramData = Object.assign({}, commonParams, {
@@ -17,10 +17,9 @@ export function getRecommend() {
   return jsonp(url, paramData, options)
 }
 
-
 // 歌单列表
-export function getDiscList() {
-  const url = '/api/getDiscList';
+export function getDiscList () {
+  const url = '/api/getDiscList'
 
   // 需要拼接的数据
   const data = Object.assign({}, commonParams, {
@@ -38,13 +37,13 @@ export function getDiscList() {
   return axios.get(url, {
     params: data
   }).then((res) => {
-    //console.log(res);
-    return  Promise.resolve(res.data);
+    // console.log(res);
+    return Promise.resolve(res.data)
   })
 }
 
 // 获取歌单详情列表
-export function getSongList(disstid) {
+export function getSongList (disstid) {
   const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
 
   const data = Object.assign({}, commonParams, {
@@ -61,7 +60,7 @@ export function getSongList(disstid) {
   return jsonp(url, data, options)
 }
 
-/*改造 歌单列表列表 */
+/* 改造 歌单列表列表 */
 
 //
 // export function getDiscList() {
@@ -83,4 +82,3 @@ export function getSongList(disstid) {
 //
 //   return jsonp(url,data,options)
 // }
-
