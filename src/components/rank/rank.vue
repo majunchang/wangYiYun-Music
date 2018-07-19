@@ -32,42 +32,42 @@
   import {mapMutations} from 'vuex'
 
   export default {
-    mixins:[playlistMixin],
+    mixins: [playlistMixin],
     components: {
       scroll,
       loading
     },
     props: {},
-    data() {
+    data () {
       return {
-        topList:[]
+        topList: []
       }
     },
-    created() {
+    created () {
       this._getTopList()
     },
     computed: {
 
     },
     methods: {
-      handlePlaylist(playlist){
+      handlePlaylist (playlist) {
         const bottom = playlist.length > 0 ? '60px' : ''
 
         this.$refs.rank.style.bottom = bottom
         this.$refs.toplist.refresh()
       },
-      _getTopList(){
-        getTopList().then((res)=>{
-          if(res.code == 0){
-           // console.log(res);
+      _getTopList () {
+        getTopList().then((res) => {
+          if (res.code == 0) {
+            // console.log(res);
             this.topList = res.data.topList
           }
         })
       },
-      selectItem(item){
-         // console.log('majunchang');
+      selectItem (item) {
+        // console.log('majunchang');
         this.$router.push({
-          path:`/rank/${item.id}`
+          path: `/rank/${item.id}`
         })
         this.setTopList(item)
       },

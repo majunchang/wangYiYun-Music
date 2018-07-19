@@ -14,7 +14,7 @@
         <div class="recommend-list">
           <h1 class='list-title'>热门歌单推荐</h1>
           <ul>
-            <li v-for="item in discList" class='item' @click='selectItem(item)'>
+            <li v-for="item in discList" class='item' :key="item.dissid">
               <div class="icon">
                 <img v-lazy="item.imgurl" width='60' height='60' alt="">
               </div>
@@ -54,43 +54,43 @@
       loading
     },
     props: {},
-    data(){
+    data () {
       return {
         recommends: [],
         discList: []
       }
     },
-    created(){
-      this._getRecommend();
+    created () {
+      this._getRecommend()
       setTimeout(() => {
-        this._getDiscList();
+        this._getDiscList()
       }, 400)
     },
     computed: {},
     methods: {
-      _getRecommend(){
+      _getRecommend () {
         getRecommend().then((res) => {
           if (res.code === resCode) {
             this.recommends = res.data.slider
           }
         })
       },
-      _getDiscList(){
+      _getDiscList () {
         getDiscList().then((res) => {
-         // console.log(res);
+          // console.log(res);
           if (res.code === resCode) {
             // console.log(res);
-            this.discList = res.data.list;
+            this.discList = res.data.list
           }
         })
       },
-      loadImg(){
+      loadImg () {
         if (!this.checkLoad) {
-          this.checkloaded = true;
+          this.checkloaded = true
           this.$refs.scroll.refresh()
         }
       },
-      handlePlaylist(playlist){
+      handlePlaylist (playlist) {
         const bottom = playlist.length > 0 ? '60px' : ''
 
         this.$refs.recommend.style.bottom = bottom
@@ -99,13 +99,13 @@
       ...mapMutations({
         setDisc: 'SET_DISC'
       }),
-      selectItem(item){
+      selectItem (item) {
         // 点击item之后 页面进行跳转 并且将你点击的这个 存储进入vuex里面
-//        console.log(item);
+      //        console.log(item);
         this.$router.push({
-          path:`/recommend/${item.dissid}`
+          path: `/recommend/${item.dissid}`
         })
-        this.setDisc(item);
+        this.setDisc(item)
       }
     }
   }

@@ -8,7 +8,7 @@
   import {mapGetters} from 'vuex'
   import {getSingerDetail} from '../../api/singer'
   import {resCode} from '../../api/config'
-  import {createSong}  from 'common/js/song'
+  import {createSong} from 'common/js/song'
   // 引入 music-list组件
   import MusicList from '../../components/music-list/music-list.vue'
 
@@ -17,16 +17,16 @@
     components: {
       MusicList
     },
-    data(){
+    data () {
       return {
         songs: []
       }
     },
     computed: {
-      title(){
+      title () {
         return this.singer.name
       },
-      bgImage(){
+      bgImage () {
         return this.singer.avatar
       },
       // mapgetters需要在计算属性中 声明
@@ -34,16 +34,16 @@
         'singer'
       ])
     },
-    created(){
+    created () {
       // 此时 我们可以根据this.singer这样写 获得我们需要的数据
       // 调用一个获取歌手详情的方法
       this._getDetail()
     },
-    mounted(){
+    mounted () {
 
     },
     methods: {
-      _getDetail(){
+      _getDetail () {
         //  如果singer没有这个id  那么设置一下跳转 让他 调到歌手页那里
         if (!this.singer.id) {
           this.$router.push('/singer')
@@ -52,21 +52,21 @@
         getSingerDetail(this.singer.id).then((res) => {
           if (res.code === resCode) {
             // console.log(res.data.list)  ;
-            this.songs = this.normalizeSongs(res.data.list);
+            this.songs = this.normalizeSongs(res.data.list)
           }
         })
       },
-      normalizeSongs(list){
-        let ret = [];
+      normalizeSongs (list) {
+        let ret = []
         list.forEach((item) => {
           // 对象的解构赋值 等同于 var musicData = item.musicData
-          let {musicData} = item;
+          let {musicData} = item
           if (musicData.songid && musicData.albummid) {
             ret.push(createSong(musicData))
           }
         })
-        return ret;
-      },
+        return ret
+      }
     }
   }
 </script>

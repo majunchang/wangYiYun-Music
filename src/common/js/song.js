@@ -40,7 +40,6 @@ export default class Song {
 
 // 在这里声明一个 工厂构造函数
 export function createSong (musicData) {
-  console.log(musicData)
   return new Song({
     id: musicData.songid,
     mid: musicData.songmid,

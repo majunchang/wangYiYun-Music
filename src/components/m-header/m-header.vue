@@ -10,18 +10,18 @@
 
 <script>
     export default{
-        components: {},
-        props: {},
-        data(){
-          return {
+      components: {},
+      props: {},
+      data () {
+        return {
 
-          }
-        },
-        created(){
+        }
+      },
+      created () {
 
-        },
-        computed: {},
-        methods: {}
+      },
+      computed: {},
+      methods: {}
     }
 </script>
 

@@ -43,8 +43,8 @@
 </template>
 
 <script>
-  import {mapGetters, mapMutations, mapActions} from 'vuex';
-  import {playMode} from 'common/js/config'
+  import {mapGetters, mapMutations, mapActions} from 'vuex'
+import {playMode} from 'common/js/config'
   import Scroll from 'base/scroll'
   import Confirm from '../../base/confirm.vue'
 
@@ -59,12 +59,12 @@
       Confirm,
       AddSong
     },
-    data(){
+    data () {
       return {
-        showflag: false,
+        showflag: false
       }
     },
-    created(){
+    created () {
 
     },
     computed: {
@@ -74,8 +74,8 @@
         'mode',
         'playlist'
       ]),
-      modeDes(){
-          return this.mode===playMode.sequence?'循环播放':this.mode===playMode.random?'随机播放':'单曲循环'
+      modeDes () {
+        return this.mode === playMode.sequence ? '循环播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
       }
     },
     methods: {
@@ -87,63 +87,63 @@
         'deleteSong',
         'deleteSongList'
       ]),
-      hide(){
+      hide () {
         this.showflag = false
       },
-      show(){
-        this.showflag = true;
+      show () {
+        this.showflag = true
         setTimeout(() => {
-          this.$refs.listContent.refresh();
+          this.$refs.listContent.refresh()
           this.scrollToCurrent(this.currentSong)
         }, 20)
       },
-      getCurrentIcon(item){
+      getCurrentIcon (item) {
         if (this.currentSong.id === item.id) {
           return 'icon-play'
         }
         return ''
       },
-      selectItem(item, index){
+      selectItem (item, index) {
         // 当播放模式为 随机播放模式的时候 这个依靠顺序列表的index是无法正确匹配随机列表的  我们要根据song的id  来找到 在随机列表数组的index
         if (this.mode === playMode.random) {
           index = this.playlist.findIndex((song) => {
-            return song.id === item.id;
+            return song.id === item.id
           })
         }
         // 当播放模式为 循环列表或者单曲循环的时候
         this.setCurrentIndex(index)
         this.setPlayingState(true)
       },
-      scrollToCurrent(current){
+      scrollToCurrent (current) {
         // 找出当前播放的歌曲 在sequcenlist的索引 然后映射到dom上
         const index = this.sequenceList.findIndex((song) => {
-          return song.id === current.id;
+          return song.id === current.id
         })
-        this.$refs.listContent.scrollToElement(this.$refs.list[index], 300);
+        this.$refs.listContent.scrollToElement(this.$refs.list[index], 300)
       },
-      deleteOne(item){
-        this.deleteSong(item);
+      deleteOne (item) {
+        this.deleteSong(item)
         if (!this.playlist.length) {
-          this.hide();
+          this.hide()
         }
       },
-      showConfirm(){
+      showConfirm () {
         this.$refs.confirm.show()
       },
-      confirmClear(){
-        this.deleteSongList();
-        this.hide();
+      confirmClear () {
+        this.deleteSongList()
+        this.hide()
       },
-      addSong(){
-          this.$refs.addSong.show();
+      addSong () {
+        this.$refs.addSong.show()
       }
     },
     watch: {
-      currentSong(newSong, oldSong){
+      currentSong (newSong, oldSong) {
         if (!this.showflag || newSong.id === oldSong.id) {
           return
         }
-        this.scrollToCurrent(newSong);
+        this.scrollToCurrent(newSong)
       }
     }
   }

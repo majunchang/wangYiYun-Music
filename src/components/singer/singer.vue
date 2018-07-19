@@ -8,63 +8,63 @@
 
 <script>
   import {getSingerList} from 'api/singer'
-  import  Singer from 'common/js/singer'
+  import Singer from 'common/js/singer'
   import {resCode} from 'api/config'
   import listView from 'base/listview'
   // 从vuex中 引入这个mutation
   import {mapMutations} from 'vuex'
   import {playlistMixin} from 'common/js/mixin'
 
-  const hotLength = 10;
-  const hotName = '热门';
-  export default{
+  const hotLength = 10
+const hotName = '热门'
+export default{
     mixins: [playlistMixin],
     components: {
       listView
     },
     props: {},
-    data(){
+    data () {
       return {
         singers: []
       }
     },
-    created(){
-      this._getSingerList();
-    },
+    created () {
+      this._getSingerList()
+  },
     computed: {},
     methods: {
-      handlePlaylist(playlist){
-        const bottom  = playlist.length>0?'60px':'';
-        this.$refs.singer.style.bottom = bottom;
-       // console.log(this.$refs.singer);
-        this.$refs.list.refresh();
+      handlePlaylist (playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.singer.style.bottom = bottom
+        // console.log(this.$refs.singer);
+        this.$refs.list.refresh()
       },
-        // mapMutations  在methods中声明
+      // mapMutations  在methods中声明
       ...mapMutations({
-        setSinger:'SET_SINGER'
+        setSinger: 'SET_SINGER'
       }),
-      selectSinger(item){
-          this.$router.push({
-            path:`/singer/${item.id}`
-          })
+      selectSinger (item) {
+        this.$router.push({
+          path: `/singer/${item.id}`
+        })
         // 将传入的参数对象 放入vuex中  item 也就是单个的歌手对象
-//        console.log(item);
+        //        console.log(item);
         this.setSinger(item)
       },
-      _getSingerList(){
+      _getSingerList () {
         getSingerList().then((res) => {
           if (res.code === resCode) {
             this.singers = this._normalizeSinger(res.data.list)
           }
         })
       },
-      _normalizeSinger(list){
+      _normalizeSinger (list) {
         let map = {
           hot: {
             title: hotName,
             items: []
           }
-        };
+        }
         list.forEach((item, index) => {
           if (index < hotLength) {
             map.hot.items.push(new Singer({
@@ -85,8 +85,8 @@
           }))
         })
         //  我们得到了对象 但是对象的key值排布 是无序的 我们要对他进行有序的排列
-        let CharArr = [];
-        let hotArr = [];
+        let CharArr = []
+        let hotArr = []
         for (var k in map) {
           if (map[k].title.match(/[a-zA-Z]/)) {
             CharArr.push(map[k])
@@ -96,10 +96,10 @@
         }
         // 此时得到了 热门数组和字符数组
         CharArr.sort((a, b) => {
-          return a.title.charCodeAt(0) - b.title.charCodeAt(0);
+          return a.title.charCodeAt(0) - b.title.charCodeAt(0)
         })
-        return hotArr.concat(CharArr);
-      },
+        return hotArr.concat(CharArr)
+      }
     }
   }
 </script>

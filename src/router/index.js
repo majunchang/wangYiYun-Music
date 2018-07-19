@@ -21,13 +21,13 @@ const singer = (resolve)=>{
   })
 }
 
-const search = (resolve)=>{
+const rank = (resolve)=>{
   import('../components/rank/rank.vue').then((module)=>{
     resolve(module)
   })
 }
 
-const rank = (resolve)=>{
+const search = (resolve)=>{
   import('../components/search/search.vue').then((module)=>{
     resolve(module)
   })

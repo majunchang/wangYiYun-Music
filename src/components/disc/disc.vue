@@ -15,19 +15,19 @@
     components: {
       MusicList
     },
-    data(){
+    data () {
       return {
         songs: []
       }
     },
-    created(){
+    created () {
       this.getSongListDetail()
     },
     computed: {
-      title(){
+      title () {
         return this.disc.dissname
       },
-      bgImage(){
+      bgImage () {
         return this.disc.imgurl
       },
       ...mapGetters([
@@ -35,28 +35,28 @@
       ])
     },
     methods: {
-      getSongListDetail(){
+      getSongListDetail () {
         if (!this.disc.dissid) {
           this.$router.push('/recommend')
           return
         }
-        console.log(this.disc);
+        console.log(this.disc)
         getSongList(this.disc.dissid).then((res) => {
-//            console.log(res);
+        //            console.log(res);
           if (res.code === 0) {
-//            console.log(res.cdlis[0].songlist);
+          //            console.log(res.cdlis[0].songlist);
             this.songs = this.normalizeSongs(res.cdlis[0].songlist)
           }
         })
       },
-      normalizeSongs(list){
-        let ret = [];
+      normalizeSongs (list) {
+        let ret = []
         list.forEach((musicData) => {
           if (musicData.songid && musicData.albummid) {
-            ret.push(createSong(musicData));
+            ret.push(createSong(musicData))
           }
         })
-        return ret;
+        return ret
       }
     }
   }

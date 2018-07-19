@@ -8,22 +8,22 @@
 
 <script>
     export default{
-        props: {
-          switches:{
-              type:Array,
-              default:[]
-          },
-          currentIndex:{
-              type:Number,
-              default:0
-          }
+      props: {
+        switches: {
+          type: Array,
+          default: []
         },
-        computed: {},
-        methods: {
-          switchItem(index){
-              this.$emit('switch',index)
-          }
+        currentIndex: {
+          type: Number,
+          default: 0
         }
+      },
+      computed: {},
+      methods: {
+        switchItem (index) {
+          this.$emit('switch', index)
+        }
+      }
     }
 </script>
 
